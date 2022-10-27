@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/StyleSheet.css') }}">
+    <!-- Boxicons CDN Link -->
+    <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   </head>
+<body>
+  <div class="sidebar">
+    <div class="logo-details">
+      <span class="logo_name">Trackit</span>
+    </div>
+      <ul class="nav-links">
+        <li>
+          <a href="#" class="active">
+            <i class='bx bx-grid-alt' ></i>
+            <span class="links_name">Dashboard</span>
+          </a>
+        </li>
+        <li>
+          <a href="managemp">
+            <span class="links_name">Profile</span>
+          </a>
+        </li>
+        <li>
+          <a href="manageuip">
+            <span class="links_name">Settings</span>
+          </a>
+        </li>
+        <li>
+            <a href="charts">
+              <span class="links_name">Charts</span>
+            </a>
+          </li>
+          <li>
+            <a href="logout">
+              <span class="links_name">Logout</span>
+            </a>
+          </li>
+      </ul>
+  </div>
+  <section class="home-section">
+    <nav>
+      <div class="sidebar-button">
+        <i class='bx bx-menu sidebarBtn'></i>
+        <span class="dashboard">Welcome {{user}}</span>
+      </div>
+      <div class="search-box">
+        <input type="text" placeholder="Search...">
+        <i class='bx bx-search' ></i>
+      </div>
+      <div class="profile-details">
+        <span class="admin_name">User</span>
+        <i class='bx bx-chevron-down' ></i>
+      </div>
+    </nav>
+
+    <div class="home-content">
+      <div class="overview-boxes">
+        <div class="box">
+          <div class="right-side">
+            <div class="box-topic">Total trackings</div>
+            <div class="number">100</div>
+            <div class="indicator">
+              <i class='bx bx-up-arrow-alt'></i>
+              <span class="text">Up from yesterday</span>
+            </div>
+          </div>
+          <i class='bx bx-edit-alt user' ></i>
+        </div>
+        <div class="box">
+          <div class="right-side">
+            <div class="box-topic">Total orders</div>
+            <div class="number">10</div>
+            <div class="indicator">
+                <i class='bx bx-up-arrow-alt'></i>
+              <span class="text">Up from yesterday</span>
+            </div>
+          </div>
+          <i class='bx bxs-user user two' ></i>
+        </div>
+        <div class="box">
+          <div class="right-side">
+            <div class="box-topic">Total Discounts</div>
+            <div class="number">$500</div>
+            <div class="indicator">
+              <i class='bx bx-up-arrow-alt'></i>
+              <span class="text">At present</span>
+            </div>
+          </div>
+          <i class='bx bx-user user three'></i>
+        </div>
+        <div class="box">
+          <div class="right-side">
+            <div class="box-topic">Recent Order</div>
+            <div class="number">$1500</div>
+            <div class="indicator">
+              <i class='bx bx-down-arrow-alt down'></i>
+              <span class="text">Down From Today</span>
+            </div>
+          </div>
+          <i class='bx bxs-washer user four' ></i>
+        </div>
+      </div>
+
+      <div class="sales-boxes">
+        <div class="recent-sales box">
+          <div class="title">Recent Orders</div>
+          <div class="sales-details">
+            <ul class="details">
+              <li class="topic">Date</li>
+              <li><a href="#">13 Oct 2021</a></li>
+              <li><a href="#">13 Oct 2021</a></li>
+              <li><a href="#">12 Oct 2021</a></li>
+              <li><a href="#">11 Oct 2021</a></li>
+              <li><a href="#">10 Oct 2021</a></li>
+              <li><a href="#">10 Oct 2021</a></li>
+              <li><a href="#">10 Oct 2021</a></li>
+            </ul>
+            <ul class="details">
+            <li class="topic">Customer</li>
+            <li><a href="#">Alex Roderigez</a></li>
+            <li><a href="#">David Smith</a></li>
+            <li><a href="#">Peter Parker</a></li>
+            <li><a href="#">Diana Mitchell</a></li>
+            <li><a href="#">Martin Paw</a></li>
+            <li><a href="#">Doe Alex</a></li>
+            <li><a href="#">Aiana Lexa</a></li>
+            <li><a href="#">Rexel Mags</a></li>
+             <li><a href="#">Tiana Loths</a></li>
+          </ul>
+          <ul class="details">
+            <li class="topic">Order Status</li>
+            <li><a href="#">Delivered</a></li>
+            <li><a href="#">Pending</a></li>
+            <li><a href="#">Returned</a></li>
+            <li><a href="#">Delivered</a></li>
+            <li><a href="#">Pending</a></li>
+            <li><a href="#">Returned</a></li>
+            <li><a href="#">Delivered</a></li>
+             <li><a href="#">Pending</a></li>
+            <li><a href="#">Delivered</a></li>
+          </ul>
+          <ul class="details">
+            <li class="topic">Total</li>
+            <li><a href="#">$56.56</a></li>
+            <li><a href="#">$44.95</a></li>
+            <li><a href="#">$65.33</a></li>
+            <li><a href="#">$101.98</a></li>
+            <li><a href="#">$24.55</a></li>
+            <li><a href="#">$12.88</a></li>
+            <li><a href="#">$164.66</a></li>
+             <li><a href="#">$23.53</a></li>
+             <li><a href="#">$46.52</a></li>
+          </ul>
+          </div>
+          <div class="button">
+            <a href="#">See All</a>
+          </div>
+        </div>
+        <div class="top-sales box">
+          <div class="title">Top trackings</div>
+          <ul class="top-sales-details">
+            <li>
+            <a href="#">
+              <span class="product">Nikon DSLR</span>
+            </a>
+            <span class="price">$900</span>
+            <span class="weight">$1500</span>
+            <span class="time">$600</span>
+          </li>
+          <li>
+            <a href="#">
+              <span class="product">iPhone 14pro</span>
+            </a>
+            <span class="price">$600</span>
+            <span class="weight">$999</span>
+            <span class="time">$300</span>
+          </li>
+          <li>
+            <a href="#">
+              <span class="product">Keychron k8</span>
+            </a>
+            <span class="price">$150</span>
+            <span class="weight">$99</span>
+            <span class="time">$50</span>
+          </li>
+          <li>
+            <a href="#">
+              <span class="product">Asus Laptop</span>
+            </a>
+            <span class="price">$700</span>
+            <span class="weight">$600</span>
+            <span class="time">$100</span>
+          </li>
+          <li>
+            <a href="#">
+              <span class="product">Razer Mouse</span>
+            </a>
+            <span class="price">$40</span>
+            <span class="weight">$25</span>
+            <span class="time">$15</span>
+          </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+   let sidebar = document.querySelector(".sidebar");
+let sidebarBtn = document.querySelector(".sidebarBtn");
+sidebarBtn.onclick = function() {
+  sidebar.classList.toggle("active");
+  if(sidebar.classList.contains("active")){
+  sidebarBtn.classList.replace("bx-menu" ,"bx-menu-alt-right");
+}else
+  sidebarBtn.classList.replace("bx-menu-alt-right", "bx-menu");
+}
+ </script>
+
+</body>
+</html>
+

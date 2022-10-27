@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title%}{% endblock %}
+
+{% block body %} 
+
+<!--Navbar start-->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">Trackit</a>
+      <!-- <img src="#" alt="" width="30" height="24" class="d-inline-block align-text-top"> -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/login">Login</a>
+            </li>
+        </ul>
+
+      </div>
+    </div>
+  </nav>
+<!--Navbar end-->
+
+<div class="container  mt-5" style="width: 22rem;">
+    <div class="row">
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title text-bold text-center">SIGN UP</h5>
+      <h6 class="card-subtitle mb-2 text-muted">Please enter your credentials to sign up.</h6>
+      <form action="/registerationaction", method="POST" , method = "GET">
+        <div class="form-floating mb-1">
+          <input type="text" class="form-control" id="signupname" name="signupname" placeholder="Vikram">
+          <label for="floatingname">Username</label>
+        </div>
+        <br>
+        <div class="form-floating">
+          <input type="email" class="form-control" id="signupemail" name="signupemail" placeholder="Vikram@gmail.com">
+          <label for="floatingemail">Email</label>
+        </div>
+        <br>
+        <div class="form-floating">
+          <input type="password" class="form-control" id="signuppass" name="signuppass" placeholder="sksjdkjsiueiw">
+          <label for="floatingemail">Password</label>
+        </div>
+        <br>
+        <div class="text-center">
+        <input class="btn" type="submit" id="button" value="SIGN UP" style="background-color: #1a54db; color:white; padding-left: 7rem; padding-right: 7rem; padding-top: 0.5rem; padding-bottom: 0.5rem;"/>
+      </div>
+    </form>
+    <p><small>Already a user? Please login here <a href=login class="link-primary">Login</a></small></p>
+
+{% endblock %}

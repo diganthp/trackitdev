@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title%}{% endblock %}
+
+{% block body %} 
+
+<!--Navbar start-->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">Trackit</a>
+      <!-- <img src="#" alt="" width="30" height="24" class="d-inline-block align-text-top"> -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/register">Sign Up</a>
+            </li>
+        </ul>
+
+      </div>
+    </div>
+  </nav>
+<!--Navbar end-->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="alert alert-success alert-dismissible fade show h6" role="alert">
+   <strong> {{ message }} </strong>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+{% else %}
+
+<div class="alert alert-success alert-dismissible fade show h6" role="alert">
+    <strong> {{flashone}} </strong>
+     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+ </div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+<div class="container text-center mt-5" style="width: 22rem;">
+    <div class="row">
+  <div class="card text-center">
+    <div class="card-body">
+      <h5 class="card-title text-bold">LOGIN</h5>
+      <h6 class="card-subtitle mb-2 text-muted">Please enter your credentials to login.</h6>
+      <form action="/login", method="POST" method = "GET">
+        <div class="form-floating mb-3">
+          <input type="text" class="form-control" id="floatingname" name="loginame" placeholder="Vikram">
+          <label for="floatingname">Username or Email</label>
+        </div>
+        <br>
+        <div class="form-floating">
+          <input type="password" class="form-control" id="floatingemail" name="loginpass" placeholder="Vikram@gmail.com">
+          <label for="floatingemail">Password</label>
+        </div>
+        <br>
+        <input class="btn" type="submit" id="button" value="LOGIN" style="background-color: #1a54db; color:white; padding-left: 7rem; padding-right: 7rem; padding-top: 0.5rem; padding-bottom: 0.5rem;"/>
+    </form>
+    <p><small>Not Registered? <a href=register class="link-primary">Create an account</a></small></p>
+    </div>
+  </div>
+  </div>
+  </div>
+  
+{% endblock %}
