@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 
 
 #Flask app variables
-app = application =  Flask(__name__, static_folder='app/static')
+app = application =  Flask(__name__, static_folder='static')
 app.config['SECRET_KEY'] = 'Thisissupposedtobesecret!'
 #Connection details
 user='root'
