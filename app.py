@@ -42,7 +42,7 @@ def login():
             return redirect(url_for('user'))
     return render_template('login.html')
 
-@app.route('/user')
+@app.route('/user', methods=['GET', 'POST'])
 def user():
     if 'user' in session:
         user = session['user']
