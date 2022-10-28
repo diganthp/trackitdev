@@ -48,9 +48,9 @@ def login():
                 if (row[0] == "{}".format(uname) or row[1] == "{}".format(uname)) and row[2] == "{}".format(passw):
                     if remem == "on":
                         session.permanent = True
-                        session['user'] = uname
+                        session['user'] = row[0]
                     else:
-                        session['user'] = uname
+                        session['user'] = row[0]
                     return redirect(url_for('user'))
     else:
         if 'user' in session:
@@ -73,10 +73,6 @@ def logout():
 @app.route('/register', methods=['GET', 'POST'])
 def signup():
     return render_template('register.html')
-
-@app.route('/about', methods=['GET', 'POST'])
-def about():
-    return render_template('about.html')
 
 @app.route('/registerationaction', methods=['GET', 'POST'])
 def registerationaction():
@@ -109,6 +105,24 @@ def registerationaction():
             return redirect(url_for('login'))
         else:
             return render_template('login.html')
+
+@app.route('/userhome', methods=['GET', 'POST'])
+def userhome():
+    if 'user' in session:
+        return render_template('userhome.html')
+    else:
+        return redirect(url_for('login'))
+
+@app.route('/results', methods =['GET','POST'])
+def getUserDetails():
+    if 'user' in session:
+        url = request.form.get('url')
+        price_limit = request.form.get('price')
+        date_range_from = request.form.get('date1')
+        date_range_to = request.form.get('date2')
+        return render_template('results.html', url=url,price_limit=price_limit,date_range_from=date_range_from,date_range_to=date_range_to)
+    else:
+        return redirect(url_for('login'))
 
 print("ssdsssd")
 
