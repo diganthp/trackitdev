@@ -2,6 +2,9 @@ from flask import Flask, render_template, redirect, url_for, request, session, f
 import mysql.connector
 from bs4 import BeautifulSoup
 from datetime import timedelta
+import json
+import requests
+import lxml
 
 
 #Flask app variables
@@ -20,9 +23,12 @@ conn = mysql.connector.connect(user=user, password=password, host=host, database
 cur = conn.cursor()
 cur.execute('CREATE TABLE IF NOT EXISTS userdata (username VARCHAR(100) UNIQUE, email VARCHAR(200) UNIQUE, password VARCHAR(200))')
 #headers
-headers = ({'User-Agent':
-            'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36',
-            'Accept-Language': 'en-US, en;q=0.5'})
+headers = ({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36', 
+'Accept' : 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 
+'Accept-Language' : 'en-US,en;q=0.5',
+'Accept-Encoding' : 'gzip', 
+'DNT' : '1', # Do Not Track Request Header 
+'Connection' : 'close'})
 
 @app.route('/')
 def index():
@@ -120,11 +126,29 @@ def getUserDetails():
         price_limit = request.form.get('price')
         date_range_from = request.form.get('date1')
         date_range_to = request.form.get('date2')
-        return render_template('results.html', url=url,price_limit=price_limit,date_range_from=date_range_from,date_range_to=date_range_to)
+        if request.method == "POST":            
+            print(url)
+            response = requests.get(url, headers=headers)
+            soup = BeautifulSoup(response.content, 'lxml')
+            title = soup.find("span", attrs={"id":'productTitle'}).get_text().strip()
+            price = soup.find("span", attrs={'class':'a-offscreen'}).get_text()
+
+            img_div = soup.find(id="imgTagWrapperId")
+
+            imgs_str = img_div.img.get('data-a-dynamic-image')  # a string in Json format
+        
+            imgs_dict = json.loads(imgs_str)    
+            num_element = 0 
+            image = list(imgs_dict.keys())[num_element]
+
+            print(title)
+            print(price)
+            print(image)
+        return render_template('results.html', title=title,price=price,date_range_from=date_range_from,date_range_to=date_range_to, image=image)
     else:
         return redirect(url_for('login'))
 
-print("ssdsssd")
+print("ssdsss")
 
 if __name__ == '__main__':
     app.run(debug=True)
