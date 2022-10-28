@@ -2,7 +2,9 @@
 
 {% block title%}{% endblock %}
 
+
 {% block body %} 
+
 
 <!--Navbar start-->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -41,12 +43,12 @@
 {% endif %}
 {% endwith %}
 
-<div class="container text-center mt-5" style="width: 22rem;">
+<div class="container mt-5" style="width: 22rem;">
     <div class="row">
-  <div class="card text-center">
+  <div class="card">
     <div class="card-body">
-      <h5 class="card-title text-bold">LOGIN</h5>
-      <h6 class="card-subtitle mb-2 text-muted">Please enter your credentials to login.</h6>
+      <h5 class="card-title text-bold text-center">LOGIN</h5>
+      <h6 class="card-subtitle mb-2 text-muted text-center">Please enter your credentials to login.</h6>
       <form action="/login", method="POST" method = "GET">
         <div class="form-floating mb-3">
           <input type="text" class="form-control" id="floatingname" name="loginame" placeholder="Vikram">
@@ -57,10 +59,15 @@
           <input type="password" class="form-control" id="floatingemail" name="loginpass" placeholder="Vikram@gmail.com">
           <label for="floatingemail">Password</label>
         </div>
-        <br>
+        <div class="mb-3 mt-2">
+            <input type="checkbox" class="form-check-input" id="exampleCheck1" name="meme">
+            <label for="exampleCheck1">Remember me</label>
+          </div>
+        <div class="text-center">
         <input class="btn" type="submit" id="button" value="LOGIN" style="background-color: #1a54db; color:white; padding-left: 7rem; padding-right: 7rem; padding-top: 0.5rem; padding-bottom: 0.5rem;"/>
+        </div>
     </form>
-    <p><small>Not Registered? <a href=register class="link-primary">Create an account</a></small></p>
+    <p class="text-center"><small>Not Registered? <a href=register class="link-primary">Create an account</a></small></p>
     </div>
   </div>
   </div>

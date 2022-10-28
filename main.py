@@ -1,11 +1,14 @@
 from flask import Flask, render_template, redirect, url_for, request, session, flash
 import mysql.connector
 from bs4 import BeautifulSoup
+from datetime import timedelta
 
 
 #Flask app variables
 app = application =  Flask(__name__, static_folder='static')
 app.config['SECRET_KEY'] = 'Thisissupposedtobesecret!'
+app.permanent_session_lifetime = timedelta(days=7)
+
 #Connection details
 user='root'
 password = 'Cloudproject##'
@@ -29,13 +32,19 @@ def index():
 def login():
     if request.method == 'POST':
         cur = conn.cursor()
+        session.permanent = False
         uname = request.form.get('loginame')
         passw = request.form.get('loginpass')
+        remem = request.form.get('meme')
         cur.execute('select * from userdata where username = "{}" or email = "{}" and password = "{}"'.format(uname, uname, passw))
         results = cur.fetchall()
         for row in results:
             if row[0] == "{}".format(uname) or row[1] == "{}".format(uname) and row[2] == "{}".format(passw):
-                session['user'] = uname
+                if remem == "on":
+                    session.permanent = True
+                    session['user'] = uname
+                else:
+                    session['user'] = uname
                 return redirect(url_for('user'))
     else:
         if 'user' in session:
@@ -65,19 +74,36 @@ def about():
 
 @app.route('/registerationaction', methods=['GET', 'POST'])
 def registerationaction():
-    signname = request.form.get('signupname')
-    signmail = request.form.get('signupemail')
-    signpassw = request.form.get('signuppass')
-    datatuple = ("{}".format(signname), "{}".format(signmail), "{}".format(signpassw))
-    cur.execute('INSERT INTO userdata (username, email, password) VALUES {}'.format(datatuple))
-    conn.commit()
-    cur.close()
-    if 'user' in session:
-        session.pop('user', None)
-        return redirect(url_for('login'))
+    if conn.is_connected() != True:
+        conn.reconnect()
+        cur = conn.cursor()
+        signname = request.form.get('signupname')
+        signmail = request.form.get('signupemail')
+        signpassw = request.form.get('signuppass')
+        datatuple = ("{}".format(signname), "{}".format(signmail), "{}".format(signpassw))
+        cur.execute('INSERT INTO userdata (username, email, password) VALUES {}'.format(datatuple))
+        conn.commit()
+        cur.close()
+        if 'user' in session:
+            session.pop('user', None)
+            return redirect(url_for('login'))
+        else:
+            return render_template('login.html')
     else:
-        return render_template('login.html')
+        signname = request.form.get('signupname')
+        signmail = request.form.get('signupemail')
+        signpassw = request.form.get('signuppass')
+        datatuple = ("{}".format(signname), "{}".format(signmail), "{}".format(signpassw))
+        cur.execute('INSERT INTO userdata (username, email, password) VALUES {}'.format(datatuple))
+        conn.commit()
+        cur.close()
+        if 'user' in session:
+            session.pop('user', None)
+            return redirect(url_for('login'))
+        else:
+            return render_template('login.html')
 
-print("hehe")
+print("sdsd")
+
 if __name__ == '__main__':
     app.run(debug=True)
