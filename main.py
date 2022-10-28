@@ -40,16 +40,18 @@ def login():
         print("password: {}".format(passw))
         cur.execute('select * from userdata where (username= "{}" or email= "{}") and password= "{}"'.format(uname, uname, passw))
         results = cur.fetchall()
-        print(results)
-        for row in results:
-            if (row[0] == "{}".format(uname) or row[1] == "{}".format(uname)) and row[2] == "{}".format(passw):
-                print(row[0], row[1], row[2])
-                if remem == "on":
-                    session.permanent = True
-                    session['user'] = uname
-                else:
-                    session['user'] = uname
-                return redirect(url_for('user'))
+        print(len(results))
+        if len(results) == 0:
+            flash("Please check the credentials and try again")
+        else:
+            for row in results:
+                if (row[0] == "{}".format(uname) or row[1] == "{}".format(uname)) and row[2] == "{}".format(passw):
+                    if remem == "on":
+                        session.permanent = True
+                        session['user'] = uname
+                    else:
+                        session['user'] = uname
+                    return redirect(url_for('user'))
     else:
         if 'user' in session:
             return redirect(url_for('user'))

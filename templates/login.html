@@ -25,28 +25,21 @@
     </div>
   </nav>
 <!--Navbar end-->
-{% with messages = get_flashed_messages(with_categories=true) %}
-{% if messages %}
-{% for category, message in messages %}
-<div class="alert alert-success alert-dismissible fade show h6" role="alert">
-   <strong> {{ message }} </strong>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
 
-{% else %}
-
-<div class="alert alert-success alert-dismissible fade show h6" role="alert">
-    <strong> {{flashone}} </strong>
-     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
- </div>
-{% endfor %}
-{% endif %}
-{% endwith %}
-
-<div class="container mt-5" style="width: 22rem;">
+<div class="container mt-5" style="width: 28rem;">
     <div class="row">
   <div class="card">
     <div class="card-body">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-danger alert-dismissible fade show h6" role="alert">
+        <strong> {{ message }} </strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
       <h5 class="card-title text-bold text-center">LOGIN</h5>
       <h6 class="card-subtitle mb-2 text-muted text-center">Please enter your credentials to login.</h6>
       <form action="/login", method="POST" method = "GET">
