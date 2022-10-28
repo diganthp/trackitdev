@@ -36,10 +36,14 @@ def login():
         uname = request.form.get('loginame')
         passw = request.form.get('loginpass')
         remem = request.form.get('meme')
-        cur.execute('select * from userdata where username = "{}" or email = "{}" and password = "{}"'.format(uname, uname, passw))
+        print("name: {}".format(uname))
+        print("password: {}".format(passw))
+        cur.execute('select * from userdata where (username= "{}" or email= "{}") and password= "{}"'.format(uname, uname, passw))
         results = cur.fetchall()
+        print(results)
         for row in results:
-            if row[0] == "{}".format(uname) or row[1] == "{}".format(uname) and row[2] == "{}".format(passw):
+            if (row[0] == "{}".format(uname) or row[1] == "{}".format(uname)) and row[2] == "{}".format(passw):
+                print(row[0], row[1], row[2])
                 if remem == "on":
                     session.permanent = True
                     session['user'] = uname
@@ -104,7 +108,7 @@ def registerationaction():
         else:
             return render_template('login.html')
 
-print("sdsd")
+print("ssdsssd")
 
 if __name__ == '__main__':
     app.run(debug=True)
