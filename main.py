@@ -8,11 +8,7 @@ import lxml
 from google.cloud import logging
 
 
-#Flask app variables
-app = application =  Flask(__name__, static_folder='static')
-app.config['SECRET_KEY'] = 'Thisissupposedtobesecret!'
-app.permanent_session_lifetime = timedelta(days=7)
-
+list1 = ["$50","$40","$30","$20","$10","$1"]
 #Connection details
 user='root'
 password = 'Cloudproject##'
@@ -22,6 +18,7 @@ database = 'cloudproject'
 
 conn = mysql.connector.connect(user=user, password=password, host=host, database=database)
 cur = conn.cursor()
+#cur.execute('Truncate table productinfo')
 cur.execute('CREATE TABLE IF NOT EXISTS userinfo (UserID INT UNIQUE AUTO_INCREMENT NOT NULL, username VARCHAR(100) UNIQUE, email VARCHAR(200) UNIQUE, password VARCHAR(200))')
 cur.execute('CREATE TABLE IF NOT EXISTS productinfo (UserID INT NOT NULL, productname VARCHAR(1000), currprice VARCHAR(200), desiredprice VARCHAR(200), link VARCHAR(1000), image VARCHAR(1000))')
 #headers
@@ -31,14 +28,6 @@ headers = ({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit
 'Accept-Encoding' : 'gzip', 
 'DNT' : '1', # Do Not Track Request Header 
 'Connection' : 'close'})
-
-logging_client = logging.Client()
-
-# The name of the log to write to
-log_name = "my-log"
-# Selects the log to write to
-logger = logging_client.logger(log_name)
-
 
 
 @app.route('/')
@@ -162,9 +151,8 @@ def results():
             cur = conn.cursor()
             cur.execute('INSERT INTO productinfo (UserID, productname, currprice, desiredprice, link, image) VALUES {}'.format(proddatatuple))
             conn.commit()
-            cur.execute('SELECT * from productinfo where UserID ={}'.format(session['user_id']))
+            cur.execute("SELECT * from productinfo where UserID ='{}'".format(session['user_id']))
             prodlist = cur.fetchall()
-            print(prodlist)
             cur.close()
         return render_template('dashboard.html', user=user, prodlist=prodlist)
     else:
@@ -188,7 +176,8 @@ def checkamazon():
     return render_template('dashboard.html', user=user)
 
 
-print("ssdss")
 
 if __name__ == '__main__':
+    executor  = ThreadPoolExecutor(max_workers=1)
+    executor.submit(checkamazon)
     app.run(debug=True)
