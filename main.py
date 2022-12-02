@@ -6,7 +6,6 @@ import json
 import requests
 import lxml
 
-
 #Flask app variables
 app = application =  Flask(__name__, static_folder='static')
 app.config['SECRET_KEY'] = 'Thisissupposedtobesecret!'
@@ -21,7 +20,8 @@ database = 'cloudproject'
 
 conn = mysql.connector.connect(user=user, password=password, host=host, database=database)
 cur = conn.cursor()
-cur.execute('CREATE TABLE IF NOT EXISTS userdata (username VARCHAR(100) UNIQUE, email VARCHAR(200) UNIQUE, password VARCHAR(200))')
+cur.execute('CREATE TABLE IF NOT EXISTS userinfo (UserID INT UNIQUE AUTO_INCREMENT NOT NULL, username VARCHAR(100) UNIQUE, email VARCHAR(200) UNIQUE, password VARCHAR(200))')
+cur.execute('CREATE TABLE IF NOT EXISTS productinfo (UserID INT NOT NULL, productname VARCHAR(1000), currprice VARCHAR(200), desiredprice VARCHAR(200), link VARCHAR(1000), image VARCHAR(1000))')
 #headers
 headers = ({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36', 
 'Accept' : 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 
@@ -44,19 +44,21 @@ def login():
         remem = request.form.get('meme')
         print("name: {}".format(uname))
         print("password: {}".format(passw))
-        cur.execute('select * from userdata where (username= "{}" or email= "{}") and password= "{}"'.format(uname, uname, passw))
+        cur.execute('select * from userinfo where (username= "{}" or email= "{}") and password= "{}"'.format(uname, uname, passw))
         results = cur.fetchall()
         print(len(results))
         if len(results) == 0:
             flash("Please check the credentials and try again")
         else:
             for row in results:
-                if (row[0] == "{}".format(uname) or row[1] == "{}".format(uname)) and row[2] == "{}".format(passw):
+                if (row[1] == "{}".format(uname) or row[2] == "{}".format(uname)) and row[3] == "{}".format(passw):
                     if remem == "on":
                         session.permanent = True
-                        session['user'] = row[0]
+                        session['user'] = row[1]
+                        session['user_id'] = row[0]
                     else:
-                        session['user'] = row[0]
+                        session['user'] = row[1]
+                        session['user_id'] = row[0]
                     return redirect(url_for('user'))
     else:
         if 'user' in session:
@@ -67,7 +69,11 @@ def login():
 def user():
     if 'user' in session:
         user = session['user']
-        return render_template('DashManager.html', user=user)
+        cur = conn.cursor()
+        cur.execute('SELECT * from productinfo where UserID ={}'.format(session['user_id']))
+        prodlist = cur.fetchall()
+        print(prodlist)        
+        return render_template('dashboard.html', user=user, prodlist=prodlist)
     else:
         return redirect(url_for('login'))
 
@@ -89,7 +95,7 @@ def registerationaction():
         signmail = request.form.get('signupemail')
         signpassw = request.form.get('signuppass')
         datatuple = ("{}".format(signname), "{}".format(signmail), "{}".format(signpassw))
-        cur.execute('INSERT INTO userdata (username, email, password) VALUES {}'.format(datatuple))
+        cur.execute('INSERT INTO userinfo (username, email, password) VALUES {}'.format(datatuple))
         conn.commit()
         cur.close()
         if 'user' in session:
@@ -103,7 +109,7 @@ def registerationaction():
         signmail = request.form.get('signupemail')
         signpassw = request.form.get('signuppass')
         datatuple = ("{}".format(signname), "{}".format(signmail), "{}".format(signpassw))
-        cur.execute('INSERT INTO userdata (username, email, password) VALUES {}'.format(datatuple))
+        cur.execute('INSERT INTO userinfo (username, email, password) VALUES {}'.format(datatuple))
         conn.commit()
         cur.close()
         if 'user' in session:
@@ -112,20 +118,20 @@ def registerationaction():
         else:
             return render_template('login.html')
 
-@app.route('/userhome', methods=['GET', 'POST'])
+@app.route('/trackit', methods=['GET', 'POST'])
 def userhome():
     if 'user' in session:
-        return render_template('userhome.html')
+        user = session['user']
+        return render_template('trackit.html', user=user)
     else:
         return redirect(url_for('login'))
 
 @app.route('/results', methods =['GET','POST'])
-def getUserDetails():
+def results():
     if 'user' in session:
-        url = request.form.get('url')
-        price_limit = request.form.get('price')
-        date_range_from = request.form.get('date1')
-        date_range_to = request.form.get('date2')
+        user = session['user']
+        url = request.form.get('proddurl')
+        desprice = request.form.get('desprice')
         if request.method == "POST":            
             print(url)
             response = requests.get(url, headers=headers)
@@ -141,14 +147,37 @@ def getUserDetails():
             num_element = 0 
             image = list(imgs_dict.keys())[num_element]
 
-            print(title)
-            print(price)
-            print(image)
-        return render_template('results.html', title=title,price=price,date_range_from=date_range_from,date_range_to=date_range_to, image=image)
+            proddatatuple = ("{}".format(session['user_id']), "{}".format(title), "{}".format(price), "{}".format(desprice), "{}".format(url), "{}".format(image))
+            cur = conn.cursor()
+            cur.execute('INSERT INTO productinfo (UserID, productname, currprice, desiredprice, link, image) VALUES {}'.format(proddatatuple))
+            conn.commit()
+            cur.execute('SELECT * from productinfo where UserID ={}'.format(session['user_id']))
+            prodlist = cur.fetchall()
+            print(prodlist)
+            cur.close()
+        return render_template('dashboard.html', user=user, prodlist=prodlist)
     else:
         return redirect(url_for('login'))
 
-print("ssdsss")
+@app.route('/checkamazon', methods=['GET', 'POST'])
+def checkamazon():
+    if 'user' in session:
+        user = session['user']
+        cur = conn.cursor()
+        cur.execute('SELECT currprice, link from productinfo')
+        linklist = cur.fetchall()
+        print(linklist)
+        for data in linklist:
+            response = requests.get(data[1], headers=headers)
+            soup = BeautifulSoup(response.content, 'lxml')
+            newprice = '$10' #soup.find("span", attrs={'class':'a-offscreen'}).get_text()
+            if newprice < data[0] or newprice > data[0]:
+                cur.execute("UPDATE productinfo SET currprice = '{}'".format(newprice))
+
+    return render_template('dashboard.html', user=user)
+
+
+print("ssdss")
 
 if __name__ == '__main__':
     app.run(debug=True)
