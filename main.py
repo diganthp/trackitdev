@@ -5,12 +5,11 @@ from datetime import timedelta
 import json
 import requests
 import lxml
+import time
+import random
+from concurrent.futures import ThreadPoolExecutor
 
-#Flask app variables
-app = application =  Flask(__name__, static_folder='static')
-app.config['SECRET_KEY'] = 'Thisissupposedtobesecret!'
-app.permanent_session_lifetime = timedelta(days=7)
-
+list1 = ["$50","$40","$30","$20","$10","$1"]
 #Connection details
 user='root'
 password = 'Cloudproject##'
@@ -20,6 +19,7 @@ database = 'cloudproject'
 
 conn = mysql.connector.connect(user=user, password=password, host=host, database=database)
 cur = conn.cursor()
+#cur.execute('Truncate table productinfo')
 cur.execute('CREATE TABLE IF NOT EXISTS userinfo (UserID INT UNIQUE AUTO_INCREMENT NOT NULL, username VARCHAR(100) UNIQUE, email VARCHAR(200) UNIQUE, password VARCHAR(200))')
 cur.execute('CREATE TABLE IF NOT EXISTS productinfo (UserID INT NOT NULL, productname VARCHAR(1000), currprice VARCHAR(200), desiredprice VARCHAR(200), link VARCHAR(1000), image VARCHAR(1000))')
 #headers
@@ -29,6 +29,34 @@ headers = ({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit
 'Accept-Encoding' : 'gzip', 
 'DNT' : '1', # Do Not Track Request Header 
 'Connection' : 'close'})
+
+def sendemail():
+    print("yay!!!!")
+    return None
+
+def checkamazon():
+    while True:
+        cur = conn.cursor()
+        cur.execute('SELECT currprice, link, desiredprice, UserID from productinfo')
+        linklist = cur.fetchall()
+        print(len(linklist))
+        for data in linklist:
+            response = requests.get(data[1], headers=headers)
+            soup = BeautifulSoup(response.content, 'lxml')
+            newprice = random.choice(list1) #soup.find("span", attrs={'class':'a-offscreen'}).get_text()
+            print(newprice)
+            cur.execute("UPDATE productinfo SET currprice = '{}' where link = '{}' and UserID = '{}'".format(newprice, data[1], data[3]))
+            conn.commit()
+            cur.close()
+            desireprice = data[2]
+            if newprice <= desireprice:
+                sendemail()
+        time.sleep(30)
+#Flask app variables
+
+app = application =  Flask(__name__, static_folder='static')
+app.config['SECRET_KEY'] = 'Thisissupposedtobesecret!'
+app.permanent_session_lifetime = timedelta(days=7)
 
 @app.route('/')
 def index():
@@ -151,33 +179,17 @@ def results():
             cur = conn.cursor()
             cur.execute('INSERT INTO productinfo (UserID, productname, currprice, desiredprice, link, image) VALUES {}'.format(proddatatuple))
             conn.commit()
-            cur.execute('SELECT * from productinfo where UserID ={}'.format(session['user_id']))
+            cur.execute("SELECT * from productinfo where UserID ='{}'".format(session['user_id']))
             prodlist = cur.fetchall()
-            print(prodlist)
             cur.close()
         return render_template('dashboard.html', user=user, prodlist=prodlist)
     else:
         return redirect(url_for('login'))
 
-@app.route('/checkamazon', methods=['GET', 'POST'])
-def checkamazon():
-    if 'user' in session:
-        user = session['user']
-        cur = conn.cursor()
-        cur.execute('SELECT currprice, link from productinfo')
-        linklist = cur.fetchall()
-        print(linklist)
-        for data in linklist:
-            response = requests.get(data[1], headers=headers)
-            soup = BeautifulSoup(response.content, 'lxml')
-            newprice = '$10' #soup.find("span", attrs={'class':'a-offscreen'}).get_text()
-            if newprice < data[0] or newprice > data[0]:
-                cur.execute("UPDATE productinfo SET currprice = '{}'".format(newprice))
-
-    return render_template('dashboard.html', user=user)
-
 
 print("ssdss")
 
 if __name__ == '__main__':
+    executor  = ThreadPoolExecutor(max_workers=1)
+    executor.submit(checkamazon)
     app.run(debug=True)
