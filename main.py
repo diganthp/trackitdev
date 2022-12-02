@@ -5,6 +5,8 @@ from datetime import timedelta
 import json
 import requests
 import lxml
+from google.cloud import logging
+
 
 #Flask app variables
 app = application =  Flask(__name__, static_folder='static')
@@ -29,6 +31,15 @@ headers = ({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit
 'Accept-Encoding' : 'gzip', 
 'DNT' : '1', # Do Not Track Request Header 
 'Connection' : 'close'})
+
+logging_client = logging.Client()
+
+# The name of the log to write to
+log_name = "my-log"
+# Selects the log to write to
+logger = logging_client.logger(log_name)
+
+
 
 @app.route('/')
 def index():
