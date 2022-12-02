@@ -5,6 +5,10 @@ from datetime import timedelta
 import json
 import requests
 import lxml
+import random
+from concurrent.futures import ThreadPoolExecutor
+import time
+
 
 list1 = ["$50","$40","$30","$20","$10","$1"]
 #Connection details
