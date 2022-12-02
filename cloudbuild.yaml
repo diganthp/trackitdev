@@ -25,19 +25,19 @@ steps:
   # Docker Build
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 
-           'us-central1-docker.pkg.dev/cloudcomputingutadiprak/github_diganthp_trackitdev/myimage:${SHORT_SHA}', '.']
+           'us-east4-docker.pkg.dev/cloudcomputingutadiprak/github_diganthp_trackitdev/myimage:${SHORT_SHA}', '.']
   # [END cloudbuild_python_image_yaml]
 
   # [START cloudbuild_python_deploy_yaml]
   # Deploy to Cloud Run
   - name: google/cloud-sdk
     args: ['gcloud', 'run', 'deploy', 'helloworld-${SHORT_SHA}', 
-           '--image=us-central1-docker.pkg.dev/cloudcomputingutadiprak/github_diganthp_trackitdev/myimage:${SHORT_SHA}', 
-           '--region', 'us-central1', '--platform', 'managed', 
+           '--image=us-east4-docker.pkg.dev/cloudcomputingutadiprak/github_diganthp_trackitdev/myimage:${SHORT_SHA}', 
+           '--region', 'us-east4', '--platform', 'managed', 
            '--allow-unauthenticated']
   # [END cloudbuild_python_deploy_yaml]
   
 # Store images in Google Artifact Registry 
 images:
-  - us-central1-docker.pkg.dev/cloudcomputingutadiprak/github_diganthp_trackitdev/myimage:${SHORT_SHA}
+  - us-east4-docker.pkg.dev/cloudcomputingutadiprak/github_diganthp_trackitdev/myimage:${SHORT_SHA}
 # [END cloudbuild_python_yaml]
