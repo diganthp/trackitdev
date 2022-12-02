@@ -5,9 +5,6 @@ from datetime import timedelta
 import json
 import requests
 import lxml
-import time
-import random
-from concurrent.futures import ThreadPoolExecutor
 
 list1 = ["$50","$40","$30","$20","$10","$1"]
 #Connection details
@@ -186,8 +183,24 @@ def results():
     else:
         return redirect(url_for('login'))
 
+@app.route('/checkamazon', methods=['GET', 'POST'])
+def checkamazon():
+    if 'user' in session:
+        user = session['user']
+        cur = conn.cursor()
+        cur.execute('SELECT currprice, link from productinfo')
+        linklist = cur.fetchall()
+        print(linklist)
+        for data in linklist:
+            response = requests.get(data[1], headers=headers)
+            soup = BeautifulSoup(response.content, 'lxml')
+            newprice = '$10' #soup.find("span", attrs={'class':'a-offscreen'}).get_text()
+            if newprice < data[0] or newprice > data[0]:
+                cur.execute("UPDATE productinfo SET currprice = '{}'".format(newprice))
 
-print("ssdss")
+    return render_template('dashboard.html', user=user)
+
+
 
 if __name__ == '__main__':
     executor  = ThreadPoolExecutor(max_workers=1)
