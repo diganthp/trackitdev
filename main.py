@@ -5,10 +5,6 @@ from datetime import timedelta
 import json
 import requests
 import lxml
-import random
-from concurrent.futures import ThreadPoolExecutor
-import time
-
 
 list1 = ["$50","$40","$30","$20","$10","$1"]
 #Connection details
@@ -58,6 +54,7 @@ def checkamazon():
 app = application =  Flask(__name__, static_folder='static')
 app.config['SECRET_KEY'] = 'Thisissupposedtobesecret!'
 app.permanent_session_lifetime = timedelta(days=7)
+
 
 @app.route('/')
 def index():
