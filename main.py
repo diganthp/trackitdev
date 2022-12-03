@@ -185,6 +185,32 @@ def results():
         return render_template('dashboard.html', user=user, prodlist=prodlist)
     else:
         return redirect(url_for('login'))
+    
+@app.route('/graphs', methods=['GET','POST'])
+def graphdata():
+    prices = []
+    dates = []
+    temp1 = []
+    temp2 = []
+    cur.execute('SELECT Price FROM graphInformation')
+    temp1 = cur.fetchall()
+    for data in temp1:
+        for item in data:
+            prices.append(item)
+    cur.execute('SELECT QueryTime FROM graphInformation')
+    temp2 = cur.fetchall()
+    for data in temp2:
+        for item in data:
+            dates.append(item)
+    plt.bar(dates,prices)
+    #plt.show()
+    figfile = io.BytesIO()
+    plt.savefig(figfile, format='jpeg')
+    plt.close()
+    figfile.seek(0)
+    figdata_jpeg = base64.b64encode(figfile.getvalue())
+    files = figdata_jpeg.decode('utf-8')
+    return render_template("graphs.html",file =files)
 
 
 print("ssdss")
