@@ -10,6 +10,7 @@ import random
 from concurrent.futures import ThreadPoolExecutor
 import base64
 import matplotlib.pyplot as plt
+import io
 
 
 list1 = ["$50","$40","$30","$20","$10","$1"]

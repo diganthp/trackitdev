@@ -4,3 +4,6 @@ mysql-connector-python
 gunicorn
 requests
 lxml
+matplotlib
+base64
+
