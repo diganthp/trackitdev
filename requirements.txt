@@ -4,4 +4,5 @@ mysql-connector-python
 gunicorn
 requests
 lxml
-google-cloud-logging
+matplotlib
+pytest
