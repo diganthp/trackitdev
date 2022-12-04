@@ -35,7 +35,7 @@ steps:
   - name: google/cloud-sdk
     args: ['gcloud', 'run', 'deploy', 'service1', 
            '--image=us-central1-docker.pkg.dev/cloudcomputingutadiprak/github_diganthp_trackitdev/myimage:${SHORT_SHA}', 
-           '--region', 'us-east4', '--platform', 'managed', 
+           '--region', 'us-central1', '--platform', 'managed', 
            '--allow-unauthenticated']
   # [END cloudbuild_python_deploy_yaml]
   
