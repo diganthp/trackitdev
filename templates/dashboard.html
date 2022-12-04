@@ -143,16 +143,6 @@
                 </div>
 
             </div>
-            {% with messages = get_flashed_messages() %}
-            {% if messages %}
-            {% for message in messages %}
-            <div class="alert alert-danger alert-dismissible fade show h6" role="alert">
-            <strong> {{ message }} </strong>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            {% endfor %}
-            {% endif %}
-            {% endwith %}
         </div>
     </div>
     <!-- /#page-content-wrapper -->

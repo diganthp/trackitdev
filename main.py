@@ -5,7 +5,12 @@ from datetime import timedelta
 import json
 import requests
 import lxml
-from google.cloud import logging
+import time
+import random
+from concurrent.futures import ThreadPoolExecutor
+import base64
+import matplotlib.pyplot as plt
+import io
 
 
 list1 = ["$50","$40","$30","$20","$10","$1"]
@@ -29,6 +34,33 @@ headers = ({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit
 'DNT' : '1', # Do Not Track Request Header 
 'Connection' : 'close'})
 
+def sendemail():
+    print("yay!!!!")
+    return None
+
+def checkamazon():
+    while True:
+        cur = conn.cursor()
+        cur.execute('SELECT currprice, link, desiredprice, UserID from productinfo')
+        linklist = cur.fetchall()
+        print(len(linklist))
+        for data in linklist:
+            response = requests.get(data[1], headers=headers)
+            soup = BeautifulSoup(response.content, 'lxml')
+            newprice = random.choice(list1) #soup.find("span", attrs={'class':'a-offscreen'}).get_text()
+            print(newprice)
+            cur.execute("UPDATE productinfo SET currprice = '{}' where link = '{}' and UserID = '{}'".format(newprice, data[1], data[3]))
+            conn.commit()
+            cur.close()
+            desireprice = data[2]
+            if newprice <= desireprice:
+                sendemail()
+        time.sleep(30)
+#Flask app variables
+
+app = application =  Flask(__name__, static_folder='static')
+app.config['SECRET_KEY'] = 'Thisissupposedtobesecret!'
+app.permanent_session_lifetime = timedelta(days=7)
 
 @app.route('/')
 def index():
@@ -157,25 +189,35 @@ def results():
         return render_template('dashboard.html', user=user, prodlist=prodlist)
     else:
         return redirect(url_for('login'))
+    
+@app.route('/graphs', methods=['GET','POST'])
+def graphdata():
+    prices = []
+    dates = []
+    temp1 = []
+    temp2 = []
+    cur.execute('SELECT Price FROM graphInformation')
+    temp1 = cur.fetchall()
+    for data in temp1:
+        for item in data:
+            prices.append(item)
+    cur.execute('SELECT QueryTime FROM graphInformation')
+    temp2 = cur.fetchall()
+    for data in temp2:
+        for item in data:
+            dates.append(item)
+    plt.bar(dates,prices)
+    #plt.show()
+    figfile = io.BytesIO()
+    plt.savefig(figfile, format='jpeg')
+    plt.close()
+    figfile.seek(0)
+    figdata_jpeg = base64.b64encode(figfile.getvalue())
+    files = figdata_jpeg.decode('utf-8')
+    return render_template("graphs.html",file =files)
 
-@app.route('/checkamazon', methods=['GET', 'POST'])
-def checkamazon():
-    if 'user' in session:
-        user = session['user']
-        cur = conn.cursor()
-        cur.execute('SELECT currprice, link from productinfo')
-        linklist = cur.fetchall()
-        print(linklist)
-        for data in linklist:
-            response = requests.get(data[1], headers=headers)
-            soup = BeautifulSoup(response.content, 'lxml')
-            newprice = '$10' #soup.find("span", attrs={'class':'a-offscreen'}).get_text()
-            if newprice < data[0] or newprice > data[0]:
-                cur.execute("UPDATE productinfo SET currprice = '{}'".format(newprice))
 
-    return render_template('dashboard.html', user=user)
-
-
+print("ssdss")
 
 if __name__ == '__main__':
     executor  = ThreadPoolExecutor(max_workers=1)
