@@ -20,8 +20,9 @@ steps:
     args: ["install", "-r", "requirements.txt", "--user"]
 # [END cloudbuild_python_dependencies_yaml]
 
-  - name: 'python'
-    args: ['python3','pytest', '*_test.py']
+  - name: python
+    entrypoint: python
+    args: ["-m", "pytest", "--junitxml=${SHORT_SHA}_test_log.xml"]
 
   # [START cloudbuild_python_image_yaml]
   # Docker Build
