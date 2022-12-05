@@ -27,22 +27,22 @@ steps:
   # [START cloudbuild_python_image_yaml]
   # Docker Build
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'us.gcr.io/cloudcomputingutadiprak/trackitdev/trackitdev/myimage:latest', '.']
+    args: ['build', '-t', 'us.gcr.io/group31cloudproject/trackit:latest', '.']
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'us.gcr.io/cloudcomputingutadiprak/trackitdev/trackitdev/myimage:latest']
+    args: ['push', 'us.gcr.io/group31cloudproject/trackit:latest']
   
   # [END cloudbuild_python_image_yaml]
 
   # [START cloudbuild_python_deploy_yaml]
   # Deploy to Cloud Run
   - name: google/cloud-sdk
-    args: ['gcloud', 'run', 'deploy', 'service1', 
-           '--image=us.gcr.io/cloudcomputingutadiprak/trackitdev/trackitdev/myimage:latest', 
+    args: ['gcloud', 'run', 'deploy', 'trackit', 
+           '--image=us.gcr.io/group31cloudproject/trackit:latest', 
            '--region', 'us-central1', '--platform', 'managed', 
            '--allow-unauthenticated']
   # [END cloudbuild_python_deploy_yaml]
   
 # Store images in Google Artifact Registry 
 images:
-  - us.gcr.io/cloudcomputingutadiprak/trackitdev/trackitdev/myimage:latest
+  - us.gcr.io/group31cloudproject/trackit:latest
 # [END cloudbuild_python_yaml]

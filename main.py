@@ -5,8 +5,6 @@ from datetime import timedelta
 import json
 import requests
 import lxml
-import time
-import random
 import base64
 import matplotlib.pyplot as plt
 import matplotlib
@@ -17,8 +15,8 @@ import io
 list1 = ["$50","$40","$30","$20","$10","$1"]
 #Connection details
 user='root'
-password = 'Cloudproject##'
-host = '34.134.204.196'
+password = 'Group31sql@@'
+host = '34.173.118.13'
 database = 'cloudproject'
 #End connection details
 
@@ -34,30 +32,6 @@ headers = ({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit
 'Accept-Encoding' : 'gzip', 
 'DNT' : '1', # Do Not Track Request Header 
 'Connection' : 'close'})
-
-def sendemail():
-    print("yay!!!!")
-    return None
-
-def checkamazon():
-    while True:
-        cur = conn.cursor()
-        cur.execute('SELECT currprice, link, desiredprice, UserID from productinfo')
-        linklist = cur.fetchall()
-        print(len(linklist))
-        for data in linklist:
-            response = requests.get(data[1], headers=headers)
-            soup = BeautifulSoup(response.content, 'lxml')
-            newprice = random.choice(list1) #soup.find("span", attrs={'class':'a-offscreen'}).get_text()
-            print(newprice)
-            cur.execute("UPDATE productinfo SET currprice = '{}' where link = '{}' and UserID = '{}'".format(newprice, data[1], data[3]))
-            conn.commit()
-            cur.close()
-            desireprice = data[2]
-            if newprice <= desireprice:
-                sendemail()
-        time.sleep(30)
-#Flask app variables
 
 app = application =  Flask(__name__, static_folder='static')
 app.config['SECRET_KEY'] = 'Thisissupposedtobesecret!'

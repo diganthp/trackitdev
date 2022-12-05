@@ -8,9 +8,9 @@ import time
 list1 = ["$50","$40","$30","$20","$10","$1"]
 #Connection details
 user='root'
-password = 'Cloudproject##'
-host = '34.134.204.196'
-database = 'cloudproject'
+password = 'Group31sql@@'
+host = '34.173.118.13'
+database = 'group31db'
 #End connection details
 
 conn = mysql.connector.connect(user=user, password=password, host=host, database=database)
