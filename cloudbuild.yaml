@@ -28,7 +28,7 @@ steps:
   # Docker Build
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 
-           'us-central1-docker.pkg.dev/cloudcomputingutadiprak/deploytest/myimage:${SHORT_SHA}', '.']
+           'us.gcr.io/cloudcomputingutadiprak/trackitdev/trackitdev/myimage', '.']
   # [END cloudbuild_python_image_yaml]
 
   # [START cloudbuild_python_deploy_yaml]
@@ -42,5 +42,5 @@ steps:
   
 # Store images in Google Artifact Registry 
 images:
-  - us-central1-docker.pkg.dev/cloudcomputingutadiprak/deploytest/myimage:${SHORT_SHA}
+  - us.gcr.io/cloudcomputingutadiprak/trackitdev/trackitdev/myimage
 # [END cloudbuild_python_yaml]
