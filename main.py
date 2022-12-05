@@ -231,7 +231,7 @@ def graphdata():
     return render_template("graphs.html",file =files, user=user)
 
 
-print("ssdss")
+print("ssds")
 
 if __name__ == '__main__':
     app.run(debug=True)
