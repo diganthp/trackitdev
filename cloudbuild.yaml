@@ -27,8 +27,10 @@ steps:
   # [START cloudbuild_python_image_yaml]
   # Docker Build
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 
-           'us.gcr.io/cloudcomputingutadiprak/trackitdev/trackitdev/myimage:latest', '.']
+    args: ['build', '-t', 'us.gcr.io/cloudcomputingutadiprak/trackitdev/trackitdev/myimage:latest', '.']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us.gcr.io/cloudcomputingutadiprak/trackitdev/trackitdev/myimage:latest']
+  
   # [END cloudbuild_python_image_yaml]
 
   # [START cloudbuild_python_deploy_yaml]
