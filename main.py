@@ -7,9 +7,10 @@ import requests
 import lxml
 import time
 import random
-from concurrent.futures import ThreadPoolExecutor
 import base64
 import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('Agg')
 import io
 
 
@@ -88,9 +89,11 @@ def login():
                         session.permanent = True
                         session['user'] = row[1]
                         session['user_id'] = row[0]
+                        session['email'] = row[2]
                     else:
                         session['user'] = row[1]
                         session['user_id'] = row[0]
+                        session['email'] = row[2]
                     return redirect(url_for('user'))
     else:
         if 'user' in session:
@@ -104,8 +107,9 @@ def user():
         cur = conn.cursor()
         cur.execute('SELECT * from productinfo where UserID ={}'.format(session['user_id']))
         prodlist = cur.fetchall()
-        print(prodlist)        
-        return render_template('dashboard.html', user=user, prodlist=prodlist)
+        print(prodlist)
+        nolist = len(prodlist)       
+        return render_template('dashboard.html', user=user, prodlist=prodlist, nolist=nolist)
     else:
         return redirect(url_for('login'))
 
@@ -186,40 +190,48 @@ def results():
             cur.execute("SELECT * from productinfo where UserID ='{}'".format(session['user_id']))
             prodlist = cur.fetchall()
             cur.close()
+            return redirect(url_for('user'))
         return render_template('dashboard.html', user=user, prodlist=prodlist)
     else:
         return redirect(url_for('login'))
     
 @app.route('/graphs', methods=['GET','POST'])
 def graphdata():
-    prices = []
-    dates = []
-    temp1 = []
-    temp2 = []
-    cur.execute('SELECT Price FROM graphInformation')
-    temp1 = cur.fetchall()
-    for data in temp1:
-        for item in data:
-            prices.append(item)
-    cur.execute('SELECT QueryTime FROM graphInformation')
-    temp2 = cur.fetchall()
-    for data in temp2:
-        for item in data:
-            dates.append(item)
-    plt.bar(dates,prices)
-    #plt.show()
-    figfile = io.BytesIO()
-    plt.savefig(figfile, format='jpeg')
-    plt.close()
-    figfile.seek(0)
-    figdata_jpeg = base64.b64encode(figfile.getvalue())
-    files = figdata_jpeg.decode('utf-8')
-    return render_template("graphs.html",file =files)
+    if 'user' in session:
+        user = session['user']
+        prices = []
+        dates = []
+        temp1 = []
+        temp2 = []
+        cur.execute('SELECT Price FROM graphInformation')
+        temp1 = cur.fetchall()
+        for data in temp1:
+            for item in data:
+                prices.append(item)
+        cur.execute('SELECT QueryTime FROM graphInformation')
+        temp2 = cur.fetchall()
+        for data in temp2:
+            for item in data:
+                dates.append(str(item))
+        plt.figure(figsize=(13,8))
+        plt.title("Product Price History")
+        labels = plt.bar(dates,prices,width = 0.5)
+        plt.bar_label(labels)
+        plt.xlabel("Date and Time")
+        plt.ylabel("Price")
+        #plt.show()
+        figfile = io.BytesIO()
+        plt.savefig(figfile, format='png', dpi=100, transparent=True)
+        plt.close()
+        figfile.seek(0)
+        figdata_jpeg = base64.b64encode(figfile.getvalue())
+        files = figdata_jpeg.decode('utf-8')
+    else:
+        return redirect(url_for('login'))
+    return render_template("graphs.html",file =files, user=user)
 
 
 print("ssdss")
 
 if __name__ == '__main__':
-    executor  = ThreadPoolExecutor(max_workers=1)
-    executor.submit(checkamazon)
     app.run(debug=True)
