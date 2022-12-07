@@ -4,6 +4,7 @@ import lxml
 import requests
 from bs4 import BeautifulSoup
 import time
+import smtplib
 
 list1 = ["$50","$40","$30","$20","$10","$1"]
 #Connection details
@@ -24,7 +25,8 @@ headers = ({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit
 
 
 def sendemail():
-    print("yay!!")
+    password = "phgnaqjbcjdjmayh"
+    
     return None
 
 def checkamazon():
