@@ -104,7 +104,7 @@
                                     <th>Product Name</th>
                                     <th>Current Price</th>
                                     <th>Desired Price</th>
-                                    <th>Link</th>
+                                    <th>Image</th>
                                  </tr>
                             {% for item in prodlist %}
                             <tr>
@@ -113,7 +113,7 @@
                                 <td>{{item[1]}}</td>
                                 <td>{{item[2]}}</td>
                                 <td>{{item[3]}}</td>
-                                <td><a class="btn btn-primary" href="{{item[5]}}" role="button">Link</a></td>
+                                <td><a class="btn btn-success" href="{{item[5]}}" role="button">Image</a></td>
                             </tr>
                             {% endfor %} 
                             </tbody>
