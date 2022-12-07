@@ -15,8 +15,8 @@ import io
 list1 = ["$50","$40","$30","$20","$10","$1"]
 #Connection details
 user='root'
-password = 'Group31sql@@'
-host = '34.173.118.13'
+password = 'Cloudproject##'
+host = '34.134.204.196'
 database = 'cloudproject'
 #End connection details
 
