@@ -187,7 +187,7 @@ def graphdata():
         for data in temp2:
             for item in data:
                 dates.append(str(item))
-        plt.figure(figsize=(11,8))
+        plt.figure(figsize=(12,7))
         plt.title("Product Price History")
         labels = plt.bar(dates,prices,width = 0.5)
         plt.bar_label(labels)
