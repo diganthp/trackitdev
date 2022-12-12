@@ -5,16 +5,14 @@ from datetime import timedelta
 import json
 import requests
 import lxml
-import pandas as pd
-import matplotlib.pyplot as plt
-import io
 import base64
+import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('Agg')
+import io
 
-#Flask app variables
-app = application =  Flask(__name__, static_folder='static')
-app.config['SECRET_KEY'] = 'Thisissupposedtobesecret!'
-app.permanent_session_lifetime = timedelta(days=7)
 
+list1 = ["$50","$40","$30","$20","$10","$1"]
 #Connection details
 user='root'
 password = 'Cloudproject##'
@@ -24,6 +22,7 @@ database = 'cloudproject'
 
 conn = mysql.connector.connect(user=user, password=password, host=host, database=database)
 cur = conn.cursor()
+#cur.execute('Truncate table productinfo')
 cur.execute('CREATE TABLE IF NOT EXISTS userinfo (UserID INT UNIQUE AUTO_INCREMENT NOT NULL, username VARCHAR(100) UNIQUE, email VARCHAR(200) UNIQUE, password VARCHAR(200))')
 cur.execute('CREATE TABLE IF NOT EXISTS productinfo (UserID INT NOT NULL, productname VARCHAR(1000), currprice VARCHAR(200), desiredprice VARCHAR(200), link VARCHAR(1000), image VARCHAR(1000))')
 #headers
@@ -33,6 +32,10 @@ headers = ({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit
 'Accept-Encoding' : 'gzip', 
 'DNT' : '1', # Do Not Track Request Header 
 'Connection' : 'close'})
+
+app = application =  Flask(__name__, static_folder='static')
+app.config['SECRET_KEY'] = 'Thisissupposedtobesecret!'
+app.permanent_session_lifetime = timedelta(days=7)
 
 @app.route('/')
 def index():
@@ -60,9 +63,11 @@ def login():
                         session.permanent = True
                         session['user'] = row[1]
                         session['user_id'] = row[0]
+                        session['email'] = row[2]
                     else:
                         session['user'] = row[1]
                         session['user_id'] = row[0]
+                        session['email'] = row[2]
                     return redirect(url_for('user'))
     else:
         if 'user' in session:
@@ -76,8 +81,9 @@ def user():
         cur = conn.cursor()
         cur.execute('SELECT * from productinfo where UserID ={}'.format(session['user_id']))
         prodlist = cur.fetchall()
-        print(prodlist)        
-        return render_template('dashboard.html', user=user, prodlist=prodlist)
+        print(prodlist)
+        nolist = len(prodlist)       
+        return render_template('dashboard.html', user=user, prodlist=prodlist, nolist=nolist)
     else:
         return redirect(url_for('login'))
 
@@ -155,57 +161,51 @@ def results():
             cur = conn.cursor()
             cur.execute('INSERT INTO productinfo (UserID, productname, currprice, desiredprice, link, image) VALUES {}'.format(proddatatuple))
             conn.commit()
-            cur.execute('SELECT * from productinfo where UserID ={}'.format(session['user_id']))
+            cur.execute("SELECT * from productinfo where UserID ='{}'".format(session['user_id']))
             prodlist = cur.fetchall()
-            print(prodlist)
             cur.close()
+            return redirect(url_for('user'))
         return render_template('dashboard.html', user=user, prodlist=prodlist)
     else:
         return redirect(url_for('login'))
-
-@app.route('/checkamazon', methods=['GET', 'POST'])
-def checkamazon():
-    if 'user' in session:
-        user = session['user']
-        cur = conn.cursor()
-        cur.execute('SELECT currprice, link from productinfo')
-        linklist = cur.fetchall()
-        print(linklist)
-        for data in linklist:
-            response = requests.get(data[1], headers=headers)
-            soup = BeautifulSoup(response.content, 'lxml')
-            newprice = '$10' #soup.find("span", attrs={'class':'a-offscreen'}).get_text()
-            if newprice < data[0] or newprice > data[0]:
-                cur.execute("UPDATE productinfo SET currprice = '{}'".format(newprice))
-
-    return render_template('dashboard.html', user=user)
-
+    
 @app.route('/graphs', methods=['GET','POST'])
 def graphdata():
-    prices = []
-    dates = []
-    temp1 = []
-    temp2 = []
-    cur.execute('SELECT Price FROM graphInformation')
-    temp1 = cur.fetchall()
-    for data in temp1:
-        for item in data:
-            prices.append(item)
-    cur.execute('SELECT QueryTime FROM graphInformation')
-    temp2 = cur.fetchall()
-    for data in temp2:
-        for item in data:
-            dates.append(item)
-    plt.bar(dates,prices) 
-    #plt.show()
-    figfile = io.BytesIO()
-    plt.savefig(figfile, format='jpeg')
-    plt.close()
-    figfile.seek(0)
-    figdata_jpeg = base64.b64encode(figfile.getvalue())
-    files = figdata_jpeg.decode('utf-8')
-    return render_template("graphs.html",file =files)
+    if 'user' in session:
+        user = session['user']
+        prices = []
+        dates = []
+        temp1 = []
+        temp2 = []
+        cur.execute('SELECT Price FROM graphInformation')
+        temp1 = cur.fetchall()
+        for data in temp1:
+            for item in data:
+                prices.append(item)
+        cur.execute('SELECT QueryTime FROM graphInformation')
+        temp2 = cur.fetchall()
+        for data in temp2:
+            for item in data:
+                dates.append(str(item))
+        plt.figure(figsize=(12,7))
+        plt.title("Product Price History")
+        labels = plt.bar(dates,prices,width = 0.5)
+        plt.bar_label(labels)
+        plt.xlabel("Date and Time")
+        plt.ylabel("Price")
+        #plt.show()
+        figfile = io.BytesIO()
+        plt.savefig(figfile, format='png', dpi=100, transparent=True)
+        plt.close()
+        figfile.seek(0)
+        figdata_jpeg = base64.b64encode(figfile.getvalue())
+        files = figdata_jpeg.decode('utf-8')
+    else:
+        return redirect(url_for('login'))
+    return render_template("graphs.html",file =files, user=user)
 
+
+print("ssds")
 
 if __name__ == '__main__':
     app.run(debug=True)
